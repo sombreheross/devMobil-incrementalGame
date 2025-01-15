@@ -18,16 +18,16 @@
       </button>
     </div>
 
-    <div v-if="currentTab === 'production'" class="production-tab">
-      <section class="storage">
-        <h2>Stockage</h2>
-        <div class="storage-info">
-          <p>Stock d'énergie : {{ energy }} u</p>
-          <p>Rendement : {{ energyYield }} u/s</p>
-          <p>Coffre-fort : {{ money }}$</p>
-        </div>
-      </section>
+    <section class="storage">
+      <h2>Stockage</h2>
+      <div class="storage-info">
+        <p>Stock d'énergie : {{ energy }} u</p>
+        <p>Rendement : {{ energyYield }} u/s</p>
+        <p>Coffre-fort : {{ money }}$</p>
+      </div>
+    </section>
 
+    <div v-if="currentTab === 'production'" class="production-tab">
       <section class="generators">
         <h2>Production énergétique</h2>
         <div class="generator-list">
@@ -120,6 +120,7 @@ const generators = reactive({
 });
 
 const saleAmount = ref(20);
+const lastSaleAmount = ref(20);
 const shopGenerators = reactive({
   smallWindmill: 6349,
   mediumWindmill: 6349,
@@ -251,7 +252,8 @@ const handleSale = async () => {
   if (!saleAmount.value || saleAmount.value > energy.value) return;
   
   try {
-    isSelling = true;  // Début de la vente
+    isSelling = true;
+    lastSaleAmount.value = saleAmount.value;
     
     const { data, error, loading } = updateResources(`${energyResourceId}/resource`, {
       amount: energy.value - saleAmount.value
@@ -272,11 +274,11 @@ const handleSale = async () => {
             if (!newMoneyLoading) {
               if (moneyData.value) {
                 money.value = moneyData.value.amount;
-                saleAmount.value = 20;
+                saleAmount.value = lastSaleAmount.value;
               } else if (moneyError.value) {
                 console.error('Erreur lors de la mise à jour de l\'argent:', moneyError.value);
               }
-              isSelling = false;  // Fin de la vente
+              isSelling = false;
             }
           });
 
