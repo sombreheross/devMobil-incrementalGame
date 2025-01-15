@@ -4,7 +4,7 @@ import router from './router';
 import { setDefaultBaseUrl, setDefaultHeaders } from './composables/useFetchApi';
 
 // Définir l'URL de base
-setDefaultBaseUrl('https://archioweb-incrementalgame.onrender.com');
+setDefaultBaseUrl('https://devmobil-incrementalgame.onrender.com');
 
 // Ajouter le token d'authentification aux headers par défaut
 const token = localStorage.getItem('token');
