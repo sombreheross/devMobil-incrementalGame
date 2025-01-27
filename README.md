@@ -43,4 +43,10 @@ npm run build
 npm run preview
 ```
 
+## 5. Serveur websocket (pas encore implémenté à 100% car requiert un changement dans le back)
+
+```jsx
+npm run server
+```
+
 Et voilà, vous pouvez accéder au jeu localement!
