@@ -45,6 +45,12 @@
         <p v-if="dynamoTimeLeft" class="dynamo">
           Dynamo active : {{ formatDynamoTime }}
         </p>
+        <p v-else class="dynamo">
+          <button @click="enableMotion" class="dynamo-button">
+            <i class="fas fa-mobile-alt"></i>
+            Activer le capteur
+          </button>
+        </p>
       </div>
     </section>
 
@@ -159,7 +165,7 @@ const shakeThreshold = 15;
 const shakeStartTime = ref(null);
 const dynamoTimeLeft = ref(0);
 let dynamoInterval = null;
-let shakeHandler = null;
+const shakeHandler = ref(null);
 
 const formatGeneratorName = (key) => {
   const names = {
@@ -362,9 +368,9 @@ const handleShake = (event) => {
       shakeStartTime.value = Date.now();
     }
   } else if (shakeStartTime.value) {
-    const shakeDuration = (Date.now() - shakeStartTime.value) / 1000; // en secondes
-    if (shakeDuration >= 1) { // minimum 1 seconde de secouage
-      startDynamo(shakeDuration * 3); // durée x3
+    const shakeDuration = (Date.now() - shakeStartTime.value) / 1000;
+    if (shakeDuration >= 1) {
+      startDynamo(shakeDuration * 3);
     }
     shakeStartTime.value = null;
   }
@@ -607,27 +613,21 @@ const detectLocation = async () => {
   }
 };
 
-const requestDeviceMotionPermission = async () => {
-  try {
-    // Pour iOS 13+
-    if (typeof DeviceMotionEvent !== 'undefined' && 
-        typeof DeviceMotionEvent.requestPermission === 'function') {
+const enableMotion = async () => {
+  if (typeof DeviceMotionEvent !== 'undefined' && 
+      typeof DeviceMotionEvent.requestPermission === 'function') {
+    try {
       const permissionState = await DeviceMotionEvent.requestPermission();
-      
       if (permissionState === 'granted') {
-        window.addEventListener('devicemotion', shakeHandler);
-      } else {
-        console.error('Permission refusée pour l\'accéléromètre');
+        shakeHandler.value = handleShake;
+        window.addEventListener('devicemotion', shakeHandler.value);
       }
-    } 
-    // Pour Android et autres
-    else if (window.DeviceMotionEvent) {
-      window.addEventListener('devicemotion', shakeHandler);
-    } else {
-      console.error('L\'accéléromètre n\'est pas supporté sur cet appareil');
+    } catch (error) {
+      console.error('Erreur de permission:', error);
     }
-  } catch (error) {
-    console.error('Erreur lors de la demande de permission:', error);
+  } else {
+    shakeHandler.value = handleShake;
+    window.addEventListener('devicemotion', shakeHandler.value);
   }
 };
 
@@ -637,16 +637,15 @@ onMounted(() => {
   fetchGenerators();
   fetchAvailableUpgrades();
   startProduction();
-  
-  requestDeviceMotionPermission();
 });
 
 onBeforeUnmount(() => {
   clearInterval(productionInterval);
   clearInterval(syncInterval);
   
-  if (shakeHandler) {
-    window.removeEventListener('devicemotion', shakeHandler);
+  if (shakeHandler.value) {
+    window.removeEventListener('devicemotion', shakeHandler.value);
+    shakeHandler.value = null;
   }
   if (dynamoInterval) {
     clearInterval(dynamoInterval);
@@ -892,5 +891,27 @@ h2 {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.dynamo-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.dynamo-button:hover {
+  background: #1976d2;
+}
+
+.dynamo-button i {
+  font-size: 1.1rem;
 }
 </style>
