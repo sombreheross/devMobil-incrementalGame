@@ -26,7 +26,7 @@
     <section class="storage">
       <h2>Stockage</h2>
       <div class="storage-info">
-        <p>Stock d'énergie : {{ energy }} u</p>
+        <p>Stock d'énergie : {{ energy.toFixed(2) }} u</p>
         <p>Rendement : {{ displayYield }}</p>
         <p>Coffre-fort : {{ money }}$</p>
         <p class="location">
