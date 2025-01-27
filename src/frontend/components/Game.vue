@@ -607,6 +607,30 @@ const detectLocation = async () => {
   }
 };
 
+const requestDeviceMotionPermission = async () => {
+  try {
+    // Pour iOS 13+
+    if (typeof DeviceMotionEvent !== 'undefined' && 
+        typeof DeviceMotionEvent.requestPermission === 'function') {
+      const permissionState = await DeviceMotionEvent.requestPermission();
+      
+      if (permissionState === 'granted') {
+        window.addEventListener('devicemotion', shakeHandler);
+      } else {
+        console.error('Permission refusée pour l\'accéléromètre');
+      }
+    } 
+    // Pour Android et autres
+    else if (window.DeviceMotionEvent) {
+      window.addEventListener('devicemotion', shakeHandler);
+    } else {
+      console.error('L\'accéléromètre n\'est pas supporté sur cet appareil');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la demande de permission:', error);
+  }
+};
+
 onMounted(() => {
   fetchGoldAmount();
   fetchEnergyAmount();
@@ -614,10 +638,7 @@ onMounted(() => {
   fetchAvailableUpgrades();
   startProduction();
   
-  if (window.DeviceMotionEvent) {
-    shakeHandler = (event) => handleShake(event);
-    window.addEventListener('devicemotion', shakeHandler);
-  }
+  requestDeviceMotionPermission();
 });
 
 onBeforeUnmount(() => {
