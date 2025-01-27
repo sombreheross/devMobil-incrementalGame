@@ -161,7 +161,7 @@ const shopGenerators = reactive({
   turbines: 6349
 });
 
-const shakeThreshold = 15;
+const shakeThreshold = 5;
 const shakeStartTime = ref(null);
 const dynamoTimeLeft = ref(0);
 let dynamoInterval = null;
@@ -400,6 +400,7 @@ const handleShake = (event) => {
 
 const startDynamo = async (duration) => {
   try {
+    console.log('Démarrage dynamo pour', duration, 'secondes');
     await fetchApi({
       url: '/users/dynamo',
       method: 'PATCH',
@@ -407,14 +408,17 @@ const startDynamo = async (duration) => {
     });
     
     dynamoTimeLeft.value = Math.floor(duration);
+    console.log('dynamoTimeLeft initialisé à:', dynamoTimeLeft.value);
     
     if (dynamoInterval) {
       clearInterval(dynamoInterval);
     }
     
     dynamoInterval = setInterval(() => {
+      console.log('Temps restant:', dynamoTimeLeft.value);
       dynamoTimeLeft.value--;
       if (dynamoTimeLeft.value <= 0) {
+        console.log('Dynamo terminée');
         stopDynamo();
       }
     }, 1000);
@@ -424,6 +428,7 @@ const startDynamo = async (duration) => {
 };
 
 const stopDynamo = async () => {
+  console.log('Arrêt de la dynamo');
   if (dynamoInterval) {
     clearInterval(dynamoInterval);
     dynamoInterval = null;
@@ -442,6 +447,7 @@ const stopDynamo = async () => {
 };
 
 const formatDynamoTime = computed(() => {
+  console.log('Formatage du temps dynamo:', dynamoTimeLeft.value);
   const minutes = Math.floor(dynamoTimeLeft.value / 60);
   const seconds = dynamoTimeLeft.value % 60;
   return `${minutes}m ${seconds}s`;
