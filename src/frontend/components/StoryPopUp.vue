@@ -3,7 +3,6 @@
     <div v-if="show" class="story-popup-overlay" @click="closePopup">
       <div class="story-popup" @click.stop>
         <div class="story-content">
-          <h2>Histoire</h2>
           <p class="story-text">{{ currentStory }}</p>
           <button class="close-button" @click="closePopup">
             <i class="fas fa-times"></i>
