@@ -45,7 +45,7 @@
         <p v-if="dynamoTimeLeft" class="dynamo">
           Dynamo active : {{ formatDynamoTime }}
         </p>
-        <p v-else class="dynamo">
+        <p v-else-if="!motionEnabled" class="dynamo">
           <button @click="enableMotion" class="dynamo-button">
             <i class="fas fa-mobile-alt"></i>
             Activer le capteur
@@ -166,6 +166,8 @@ const shakeStartTime = ref(null);
 const dynamoTimeLeft = ref(0);
 let dynamoInterval = null;
 const shakeHandler = ref(null);
+
+const motionEnabled = ref(false);
 
 const formatGeneratorName = (key) => {
   const names = {
@@ -660,6 +662,7 @@ const enableMotion = async () => {
         console.log('Permission accordée, ajout de l\'écouteur');
         shakeHandler.value = handleShake;
         window.addEventListener('devicemotion', shakeHandler.value);
+        motionEnabled.value = true;
       }
     } catch (error) {
       console.error('Erreur lors de la demande de permission:', error);
@@ -668,6 +671,7 @@ const enableMotion = async () => {
     console.log('Activation directe pour Android/autres');
     shakeHandler.value = handleShake;
     window.addEventListener('devicemotion', shakeHandler.value);
+    motionEnabled.value = true;
   }
 };
 
