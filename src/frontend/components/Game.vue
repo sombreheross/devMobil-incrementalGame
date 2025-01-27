@@ -1,5 +1,6 @@
 <template>
   <div class="game-container">
+    <StoryPopUp :level="currentLevel" />
     <button class="logout-button" @click="handleLogout">
       <i class="fas fa-sign-out-alt"></i>
     </button>
@@ -57,11 +58,22 @@
     <div v-if="currentTab === 'production'" class="production-tab">
       <section class="generators">
         <h2>Production énergétique</h2>
-        <div class="generator-list">
+        <div v-if="Object.keys(activeGenerators).length > 0" class="generator-list">
           <div v-for="(upgradeList, generator) in activeGenerators" :key="generator" class="generator-item">
             <span class="generator-name">{{ formatGeneratorName(generator) }} :</span>
             <span class="generator-count">{{ upgradeList.length }}</span>
           </div>
+        </div>
+        <div v-else class="repair-section">
+          <p class="repair-text">La centrale est en mauvais état. Il faut commencer par réparer la petite batterie pour produire de l'énergie.</p>
+          <button 
+            class="repair-button" 
+            @click="handleRepair"
+            :disabled="money < 5"
+          >
+            <i class="fas fa-wrench"></i>
+            Réparer la batterie (5$)
+          </button>
         </div>
       </section>
     </div>
@@ -117,6 +129,7 @@ import { ref, reactive, onMounted, watch, onBeforeUnmount, computed } from 'vue'
 import { useFetchApiCrud } from '../composables/useFetchApiCrud';
 import { useFetchApi } from '../composables/useFetchApi';
 import { useRouter } from 'vue-router';
+import StoryPopUp from './StoryPopUp.vue';
 
 const currentTab = ref('production');
 const energy = ref(0);
@@ -172,6 +185,8 @@ const motionEnabled = ref(false);
 
 const lastMovementTime = ref(0);
 
+const currentLevel = ref(0);
+
 const formatGeneratorName = (key) => {
   const names = {
     smallWindmill: 'Petite batterie',
@@ -224,6 +239,21 @@ const { fetchApi } = useFetchApi();
 
 const router = useRouter();
 
+const updateCurrentLevel = (upgrades) => {
+  if (!upgrades || upgrades.length === 0) return;
+  
+  // Trouver le niveau le plus élevé parmi les upgrades possédés
+  const maxLevel = upgrades.reduce((max, upgrade) => {
+    const level = parseInt(upgrade._id);
+    return level > max ? level : max;
+  }, 0);
+  
+  // Mettre à jour le niveau actuel si c'est plus élevé
+  if (maxLevel > currentLevel.value) {
+    currentLevel.value = maxLevel;
+  }
+};
+
 const fetchGenerators = async () => {
   console.log('Début fetchGenerators');
   const { data, error, loading } = readUpgrades('?limit=0&owned=true');
@@ -245,6 +275,9 @@ const fetchGenerators = async () => {
             energyYield.value += upgrade.production;
           }
         });
+
+        // Mettre à jour le niveau actuel
+        updateCurrentLevel(data.value.upgrades);
       } else if (error.value) {
         console.error('Erreur lors de la récupération des générateurs:', error.value);
       }
@@ -688,6 +721,42 @@ const activeGenerators = computed(() => {
     }, {});
 });
 
+const handleRepair = async () => {
+  if (money.value < 5) return;
+  
+  try {
+    // Mettre à jour l'argent
+    const { data: moneyData, error: moneyError, loading: moneyLoading } = updateResources(`${goldResourceId}/resource`, {
+      amount: money.value - 5
+    });
+
+    watch(moneyLoading, async (newMoneyLoading) => {
+      if (!newMoneyLoading) {
+        if (moneyData.value) {
+          money.value = moneyData.value.amount;
+
+          try {
+            // Acheter la première batterie
+            await fetchApi({
+              url: '/upgrades/1/buy',
+              method: 'POST'
+            });
+            
+            // Mettre à jour la liste des générateurs
+            await fetchGenerators();
+          } catch (buyError) {
+            console.error('Erreur lors de la réparation de la batterie:', buyError);
+          }
+        } else if (moneyError.value) {
+          console.error('Erreur lors de la mise à jour de l\'argent:', moneyError.value);
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Erreur lors de la réparation:', err);
+  }
+};
+
 onMounted(() => {
   fetchGoldAmount();
   fetchEnergyAmount();
@@ -970,5 +1039,47 @@ h2 {
 
 .dynamo-button i {
   font-size: 1.1rem;
+}
+
+.repair-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  text-align: center;
+}
+
+.repair-text {
+  color: #666;
+  line-height: 1.5;
+  font-size: 1.1rem;
+}
+
+.repair-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.repair-button:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.repair-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.repair-button i {
+  font-size: 1.2rem;
 }
 </style>
