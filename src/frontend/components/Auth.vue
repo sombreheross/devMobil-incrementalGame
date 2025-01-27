@@ -219,8 +219,8 @@ onMounted(() => {
 }
 
 .auth-tabs button.active {
-  color: #2196f3;
-  border-bottom: 2px solid #2196f3;
+  color: #4CAF50;
+  border-bottom: 2px solid #4CAF50;
 }
 
 .form-group {
@@ -244,7 +244,7 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #2196f3;
+  border-color: #4CAF50;
 }
 
 .error-message {
@@ -256,7 +256,7 @@ input:focus {
 .submit-btn {
   width: 100%;
   padding: 1rem;
-  background-color: #2196f3;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -266,7 +266,7 @@ input:focus {
 }
 
 .submit-btn:hover {
-  background-color: #1976d2;
+  background-color: #388E3C;
 }
 
 .welcome-text {
@@ -292,7 +292,7 @@ input:focus {
   width: 50px;
   height: 50px;
   border: 5px solid #f3f3f3;
-  border-top: 5px solid #2196f3;
+  border-top: 5px solid #4CAF50;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
