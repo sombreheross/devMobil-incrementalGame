@@ -169,6 +169,8 @@ const shakeHandler = ref(null);
 
 const motionEnabled = ref(false);
 
+const lastMovementTime = ref(0);
+
 const formatGeneratorName = (key) => {
   const names = {
     smallWindmill: 'Petite batterie',
@@ -366,24 +368,32 @@ const handleShake = (event) => {
     Math.pow(acceleration.z, 2)
   );
 
+  const now = Date.now();
+
   if (movement > shakeThreshold) {
     if (!shakeStartTime.value) {
-      shakeStartTime.value = Date.now();
+      shakeStartTime.value = now;
       console.log('Début du secouage:', {
         startTime: new Date(shakeStartTime.value).toISOString()
       });
     }
   } else if (shakeStartTime.value) {
-    const shakeDuration = (Date.now() - shakeStartTime.value) / 1000;
-    console.log('Fin du secouage:', {
-      duration: shakeDuration,
-      dynamoDuration: shakeDuration * 3
-    });
-    
-    if (shakeDuration >= 1) {
-      startDynamo(shakeDuration * 3);
+    if (now - shakeStartTime.value >= 1000 && now - lastMovementTime.value >= 500) {
+      const shakeDuration = (now - shakeStartTime.value) / 1000;
+      console.log('Fin du secouage:', {
+        duration: shakeDuration,
+        dynamoDuration: shakeDuration * 3
+      });
+      
+      if (shakeDuration >= 1) {
+        startDynamo(shakeDuration * 3);
+      }
+      shakeStartTime.value = null;
     }
-    shakeStartTime.value = null;
+  }
+  
+  if (movement > shakeThreshold) {
+    lastMovementTime.value = now;
   }
 };
 
