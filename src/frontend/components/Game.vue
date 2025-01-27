@@ -355,7 +355,15 @@ const syncWithServer = async () => {
 
 const handleShake = (event) => {
   const acceleration = event.accelerationIncludingGravity;
-  if (!acceleration) return;
+  console.log('DeviceMotion Event:', {
+    acceleration,
+    timestamp: new Date().toISOString()
+  });
+
+  if (!acceleration) {
+    console.log('Pas de données d\'accélération disponibles');
+    return;
+  }
 
   const movement = Math.sqrt(
     Math.pow(acceleration.x, 2) +
@@ -363,12 +371,26 @@ const handleShake = (event) => {
     Math.pow(acceleration.z, 2)
   );
 
+  console.log('Mouvement détecté:', {
+    movement,
+    threshold: shakeThreshold,
+    isShaking: movement > shakeThreshold
+  });
+
   if (movement > shakeThreshold) {
     if (!shakeStartTime.value) {
       shakeStartTime.value = Date.now();
+      console.log('Début du secouage:', {
+        startTime: new Date(shakeStartTime.value).toISOString()
+      });
     }
   } else if (shakeStartTime.value) {
     const shakeDuration = (Date.now() - shakeStartTime.value) / 1000;
+    console.log('Fin du secouage:', {
+      duration: shakeDuration,
+      dynamoDuration: shakeDuration * 3
+    });
+    
     if (shakeDuration >= 1) {
       startDynamo(shakeDuration * 3);
     }
@@ -614,18 +636,30 @@ const detectLocation = async () => {
 };
 
 const enableMotion = async () => {
+  console.log('Tentative d\'activation du capteur de mouvement');
+  console.log('DeviceMotionEvent disponible:', typeof DeviceMotionEvent !== 'undefined');
+  console.log('requestPermission disponible:', 
+    typeof DeviceMotionEvent !== 'undefined' && 
+    typeof DeviceMotionEvent.requestPermission === 'function'
+  );
+
   if (typeof DeviceMotionEvent !== 'undefined' && 
       typeof DeviceMotionEvent.requestPermission === 'function') {
     try {
+      console.log('Demande de permission pour iOS');
       const permissionState = await DeviceMotionEvent.requestPermission();
+      console.log('État de la permission:', permissionState);
+      
       if (permissionState === 'granted') {
+        console.log('Permission accordée, ajout de l\'écouteur');
         shakeHandler.value = handleShake;
         window.addEventListener('devicemotion', shakeHandler.value);
       }
     } catch (error) {
-      console.error('Erreur de permission:', error);
+      console.error('Erreur lors de la demande de permission:', error);
     }
   } else {
+    console.log('Activation directe pour Android/autres');
     shakeHandler.value = handleShake;
     window.addEventListener('devicemotion', shakeHandler.value);
   }
