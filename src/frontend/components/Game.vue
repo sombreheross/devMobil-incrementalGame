@@ -42,6 +42,9 @@
             <span>Me localiser</span>
           </button>
         </p>
+        <p v-if="dynamoTimeLeft" class="dynamo">
+          Dynamo active : {{ formatDynamoTime }}
+        </p>
       </div>
     </section>
 
@@ -151,6 +154,12 @@ const shopGenerators = reactive({
   dam: 6349,
   turbines: 6349
 });
+
+const shakeThreshold = 15;
+const shakeStartTime = ref(null);
+const dynamoTimeLeft = ref(0);
+let dynamoInterval = null;
+let shakeHandler = null;
 
 const formatGeneratorName = (key) => {
   const names = {
@@ -338,14 +347,95 @@ const syncWithServer = async () => {
   });
 };
 
+const handleShake = (event) => {
+  const acceleration = event.accelerationIncludingGravity;
+  if (!acceleration) return;
+
+  const movement = Math.sqrt(
+    Math.pow(acceleration.x, 2) +
+    Math.pow(acceleration.y, 2) +
+    Math.pow(acceleration.z, 2)
+  );
+
+  if (movement > shakeThreshold) {
+    if (!shakeStartTime.value) {
+      shakeStartTime.value = Date.now();
+    }
+  } else if (shakeStartTime.value) {
+    const shakeDuration = (Date.now() - shakeStartTime.value) / 1000; // en secondes
+    if (shakeDuration >= 1) { // minimum 1 seconde de secouage
+      startDynamo(shakeDuration * 3); // durée x3
+    }
+    shakeStartTime.value = null;
+  }
+};
+
+const startDynamo = async (duration) => {
+  try {
+    await fetchApi({
+      url: '/users/dynamo',
+      method: 'PATCH',
+      data: { dynamo: true }
+    });
+    
+    dynamoTimeLeft.value = Math.floor(duration);
+    
+    if (dynamoInterval) {
+      clearInterval(dynamoInterval);
+    }
+    
+    dynamoInterval = setInterval(() => {
+      dynamoTimeLeft.value--;
+      if (dynamoTimeLeft.value <= 0) {
+        stopDynamo();
+      }
+    }, 1000);
+  } catch (error) {
+    console.error('Erreur lors du démarrage de la dynamo:', error);
+  }
+};
+
+const stopDynamo = async () => {
+  if (dynamoInterval) {
+    clearInterval(dynamoInterval);
+    dynamoInterval = null;
+  }
+  dynamoTimeLeft.value = 0;
+  
+  try {
+    await fetchApi({
+      url: '/users/dynamo',
+      method: 'PATCH',
+      data: { dynamo: false }
+    });
+  } catch (error) {
+    console.error('Erreur lors de l\'arrêt de la dynamo:', error);
+  }
+};
+
+const formatDynamoTime = computed(() => {
+  const minutes = Math.floor(dynamoTimeLeft.value / 60);
+  const seconds = dynamoTimeLeft.value % 60;
+  return `${minutes}m ${seconds}s`;
+});
+
 const displayYield = computed(() => {
-  const baseYield = energyYield.value;
-  const actualYield = location.value === 'outdoor' ? baseYield * 1.1 : baseYield;
+  let baseYield = energyYield.value;
+  let bonuses = [];
   
   if (location.value === 'outdoor') {
-    return `${actualYield.toFixed(1)} u/s (extérieur +10%)`;
+    baseYield *= 1.1;
+    bonuses.push('extérieur +10%');
   }
-  return `${baseYield} u/s`;
+  
+  if (dynamoTimeLeft.value > 0) {
+    baseYield *= 2;
+    bonuses.push('dynamo +100%');
+  }
+  
+  return bonuses.length > 0 
+    ? `${baseYield.toFixed(1)} u/s (${bonuses.join(', ')})`
+    : `${baseYield} u/s`;
 });
 
 const startProduction = () => {
@@ -523,11 +613,23 @@ onMounted(() => {
   fetchGenerators();
   fetchAvailableUpgrades();
   startProduction();
+  
+  if (window.DeviceMotionEvent) {
+    shakeHandler = (event) => handleShake(event);
+    window.addEventListener('devicemotion', shakeHandler);
+  }
 });
 
 onBeforeUnmount(() => {
   clearInterval(productionInterval);
   clearInterval(syncInterval);
+  
+  if (shakeHandler) {
+    window.removeEventListener('devicemotion', shakeHandler);
+  }
+  if (dynamoInterval) {
+    clearInterval(dynamoInterval);
+  }
 });
 </script>
 
@@ -761,5 +863,13 @@ h2 {
 .location-toggle:disabled {
   cursor: wait;
   opacity: 0.7;
+}
+
+.dynamo {
+  color: #2196f3;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>
