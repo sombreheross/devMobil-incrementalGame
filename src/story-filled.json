@@ -1,0 +1,57 @@
+{
+    "unlocks": [
+      {
+        "level": 0,
+        "description": "Vos yeux s’ouvrent. Vous regardez autour de vous et vous constatez une pièce chaleureuse. La porte de la pièce s’ouvre doucement. Un vieil homme entre dans la pièce.\n\n-Tu t’es enfin réveillé? Je pensais même pas que t’allais survivre. Ça fait 1 semaine que tu dors. Je t’ai trouvé dehors, dans le no man’s land. Je t’ai soigné comme j’ai pu.\n\n-…\n\n-Tu faisais quoi là dehors?\n\n-Je…Je ne me rappelle de rien.\n\n-Ok pas grave, en tout cas ici t’es en sécurité, je m’appelle Gary et toi?\n\n-Je ne sais plus non plus. Je suis où?\n\n-Dans une vieille centrale électrique que je suis en train de retaper! Ça fait maintenant 6 mois que je bosse là dessus. J’ai tout bientôt terminé, il manque plus que quelques détails.\n\n-Pourquoi la centrale ne fonctionne plus?\n\n-Eh bien à cause de la guerre.\n\n-Quelle guerre?\n\n-Tu ne te rappelles vraiment plus de rien?\n\n-Plus de rien.\n\n-Bon pour te la faire court, en 2026 a débuté la pire des guerres de l’histoire de l’humanité. Une guerre atomique sans précédent entre les plus grandes puissances de l’ancien monde. Il a duré activement environ 3-4 ans, ce qui a suffi pour détruire la majorité de la planète et tuer la majorité de sa population. Alors qu’on est maintenant en 2077, la guerre n’est officiellement pas terminée. Mais je crois pas qu’il reste beaucoup de mondes des anciens gouvernements. C’est surtout des camps de survivants, des voleurs et des tueurs qu’il reste. J’en sais quelque chose, j’ai fait la majorité de ma vie dans le no man’s land.\n\nEnfin, ça m’arrange que tu sois là, tu pourras m’aider. T’arrives marcher?\n\n-Je crois oui.\n\n*Vous sortez de votre lit et faites quelques pas.*\n\n-Parfait! Ta première mission sera d’aller acheter une batterie de stockage au camp d’à côté, le camp de Lost Lake."
+      },
+      {
+        "level": 1,
+        "description": "-Merci! Grâce à ça et aux dernières modifications que j’ai faites, on devrait pouvoir faire tourner la centrale. L’énergie générée par la centrale pourra être revendue au camp de survivant ou tu as été acheté la batterie afin d’améliorer la centrale."
+      },
+      {
+        "level": 4,
+        "description": "-Cela fait déjà un moment que je me sens plus autant en forme. À 77 ans je n’ai plus la même force qu’avant, c’est sympa de m’aider."
+      },
+      {
+        "level": 5,
+        "description": "Un matin, vous vous rendez dans la chambre de Gary pour voir son état. Il est sans vie. Vous trouvez une note à son chevet. Elle dit:Tu t’occupes bien de la centrale, continue à l’améliorer pour aider le camp de survivant de Lost Lake à avoir de l’énergie. Elle est à toi. Je sens que je m’en vais. Et n’oublie pas: ' Be you, be proud of you because you can be do what we want to do” - Gary \n\n -Je ne sais plus qui je suis, mais tout ce que je sais, c’est que je dois faire évoluer la centrale électrique pour aider ces gens."
+      },
+      {
+        "level": 6,
+        "description": "“Bravo, tu continues à améliorer la centrale, je suis fier de toi, continue comme ça.” “C’est une note de Garry, il vous félicite d’arriver au palier suivant, mais comment le sait-il? Est-il vraiment mort? Nous observe-t-il?”"
+      },
+      {
+        "level": 11,
+        "description": "“C’est la fin. Le monde brûle. Je ne vois pas comment nous pourrions survivre. Les gens commencent à s’entretuer, l’Etat n’est plus et la planète entière est en train de devenir radioactive avec toutes ces explosions. Oui, on a réussi à trouver un abri antiatomique. Oui, ma mère, mon père et ma sœur et moi-même sommes à l’abri pour le moment. Mais à quel prix? Le prix de la vie d’un homme” - 17.10.2026"
+      },
+      {
+        "level": 17,
+        "description": "“J’en peux plus de vivre dans le No Man’s Land, c’est trop épuisant pour moi, je me fais vieux, je ne suis plus sûr de pouvoir tenir encore très longtemps. En plus, l’augmentation des tempêtes de poussières radioactives qui affaiblit quiconque les traverse ne vont pas en améliorant ma santé” - 12.11.2075"
+      },
+      {
+        "level": 23,
+        "description": "“La situation a encore empiré, sur les réseaux, ils disent que la fin du monde est proche, qu’une guerre nucléaire est proche. C’est probablement encore des fake news, mais ça fait quand même froid dans le dos. Je vais commencer à tenir un journal depuis aujourd’hui. Qui sait peut-être qu’un jour ce journal serait retrouvé après la “guerre nucléaire” et étudié comme celui d’Anne Franck.” - 01.01.2025"
+      },
+      {
+        "level": 28,
+        "description": "“Putain de merde, j’avais pas voulu faire ça, mais ils m’ont pas laissé le choix. Et je crois que je le regrette pas. On leur faisait confiance, on pensait qu’ils étaient réglos. Ils nous ont menti. C’était un piège. Ma soeur est morte. Il ne me restait plus qu’elle. Oui, j’ai réussi a poignardé leur chef mais je l’ai perdu. Guerre de merde. J’aimerais tellement revenir avant tout ça. Reposes en paix petite sœur.” - 26.09.2031"
+      },
+      {
+        "level": 31,
+        "description": "“En explorant le nouveau terrain acheté, vous découvrez une vielle cabane. Vous entrez dans la cabane et découvrez une note gravée dans le bois.” \n\n “Ici a vécu Garry - 14.05.2053”"
+      },
+      {
+        "level": 34,
+        "description": "“Plus jamais je ne mets les pieds dans un camp de survivants, c’est des malades. Dans le camp du nord de Lost Lake il ont décapité un pauvre gars qui avait volé un morceau de viande parce qu’il était affamé. Avec ça plus ce qu’il s’est passé pour ma sœur, je préfère faire ma vie dans le no man’s Land. ” - 05.07.2042"
+      },
+      {
+        "level": 36,
+        "description": "“Je crois que j’ai trouvé un endroit qui pourrait être ma dernière maison. Une vieille centrale électrique dans un petit coin calme. Je pourrais peut-être la retaper et vendre l’énergie à la ville la plus proche. Je crois qu’ils ont une bonne réputation.” -  23.04.2076"
+      },
+      {
+        "level": 39,
+        "description": "-Bonjour, je suis le responsable du camp de Lost Lake, Nicolas Chabloz. Merci pour ce que vous avez fait pour nous. Content que ce soit vous le patron maintenant. Mais attention, ce n’est que le début, il y a encore beaucoup d’autres camps à aider. Enfin, ça sera pour une plus tard. Pour le moment, célébrons cette victoire! Vous avez terminé pour le moment! Bravo!"
+      }
+    ]
+  }
+  
