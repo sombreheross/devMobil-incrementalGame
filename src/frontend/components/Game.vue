@@ -472,26 +472,27 @@ const detectLocation = async () => {
 
     // Envoyer les coordonnées à l'API
     try {
-      const requestBody = {
+      const payload = {
         longitude: Number(longitude),
         latitude: Number(latitude)
       };
-      console.log('Envoi à l\'API:', requestBody);
+      
+      console.log('Envoi à l\'API - Payload:', payload);
+      console.log('Type de longitude:', typeof payload.longitude);
+      console.log('Type de latitude:', typeof payload.latitude);
 
-      await fetchApi({
+      const response = await fetchApi({
         url: '/users/position',
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: requestBody  // Changé de 'body' à 'data'
+        body: payload
       });
       
-      console.log('Position mise à jour avec succès');
+      console.log('Réponse de l\'API:', response);
+
     } catch (error) {
       console.error("Erreur lors de l'envoi des coordonnées à l'API:", error);
       if (error.response) {
-        console.error("Réponse de l'API:", error.response.data);
+        console.error('Détails de l\'erreur:', await error.response.json());
       }
     }
 
