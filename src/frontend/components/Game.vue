@@ -161,8 +161,8 @@ const shopGenerators = reactive({
   turbines: 6349
 });
 
-const shakeThreshold = 20;
-const endShakeThreshold = 12;
+const shakeThreshold = 30;
+const endShakeThreshold = 15;
 const shakeStartTime = ref(null);
 const dynamoTimeLeft = ref(0);
 let dynamoInterval = null;
@@ -367,12 +367,12 @@ const handleShake = (event) => {
     Math.pow(acceleration.x, 2) +
     Math.pow(acceleration.y, 2) +
     Math.pow(acceleration.z, 2)
-  );
+  ) - 9.81;
 
   const now = Date.now();
 
   if (now % 1000 < 100) {
-    console.log('Movement:', movement.toFixed(2));
+    console.log('Movement (sans gravité):', movement.toFixed(2));
   }
 
   if (movement > shakeThreshold) {
