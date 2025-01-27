@@ -43,11 +43,11 @@
       <section class="sale">
         <h2>Vente</h2>
         <div class="sale-info">
-          <p>Prix de vente : 20u pour 1$</p>
+          <p>Prix de vente : 10u pour 1$</p>
           <div class="sale-action">
             <select v-model="saleAmount" class="amount-select">
               <option 
-                v-for="amount in [20, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 25000000, 50000000]" 
+                v-for="amount in [10, 20, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 25000000, 50000000]" 
                 :key="amount"
                 :value="amount"
                 :disabled="amount > energy"
@@ -119,8 +119,8 @@ const generators = reactive({
   city: []              // Achat de la ville
 });
 
-const saleAmount = ref(20);
-const lastSaleAmount = ref(20);
+const saleAmount = ref(10);
+const lastSaleAmount = ref(10);
 const shopGenerators = reactive({
   smallWindmill: 6349,
   mediumWindmill: 6349,
