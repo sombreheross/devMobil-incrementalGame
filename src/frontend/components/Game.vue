@@ -265,7 +265,7 @@ const handleSale = async () => {
           // On utilise directement la valeur du serveur
           energy.value = data.value.amount;
           
-          const moneyEarned = saleAmount.value / 20;
+          const moneyEarned = saleAmount.value / 10;
           const { data: moneyData, error: moneyError, loading: moneyLoading } = updateResources(`${goldResourceId}/resource`, {
             amount: money.value + moneyEarned
           });
