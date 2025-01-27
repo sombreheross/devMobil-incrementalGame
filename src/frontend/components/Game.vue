@@ -58,7 +58,7 @@
       <section class="generators">
         <h2>Production énergétique</h2>
         <div class="generator-list">
-          <div v-for="(upgradeList, generator) in generators" :key="generator" class="generator-item">
+          <div v-for="(upgradeList, generator) in activeGenerators" :key="generator" class="generator-item">
             <span class="generator-name">{{ formatGeneratorName(generator) }} :</span>
             <span class="generator-count">{{ upgradeList.length }}</span>
           </div>
@@ -679,6 +679,15 @@ const enableMotion = async () => {
   }
 };
 
+const activeGenerators = computed(() => {
+  return Object.entries(generators)
+    .filter(([_, upgradeList]) => upgradeList.length > 0)
+    .reduce((acc, [key, val]) => {
+      acc[key] = val;
+      return acc;
+    }, {});
+});
+
 onMounted(() => {
   fetchGoldAmount();
   fetchEnergyAmount();
@@ -827,7 +836,7 @@ h2 {
 
 .sell-button {
   padding: 8px 20px;
-  background: #4CAF50;
+  background: #2196f3;
   color: white;
   border: none;
   border-radius: 5px;
@@ -836,7 +845,7 @@ h2 {
 }
 
 .sell-button:hover {
-  background: #388E3C;
+  background: #1976d2;
 }
 
 .generator-shop-list {
@@ -913,7 +922,7 @@ h2 {
   border: none;
   cursor: pointer;
   padding: 5px 10px;
-  color: #4CAF50;
+  color: #2196f3;
   transition: color 0.2s;
   display: flex;
   align-items: center;
@@ -925,7 +934,7 @@ h2 {
 }
 
 .location-toggle:hover {
-  color: #388E3C;
+  color: #1976d2;
 }
 
 .location-toggle:disabled {
@@ -934,7 +943,7 @@ h2 {
 }
 
 .dynamo {
-  color: #4CAF50;
+  color: #2196f3;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -946,7 +955,7 @@ h2 {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: #4CAF50;
+  background: #2196f3;
   color: white;
   border: none;
   border-radius: 5px;
@@ -956,7 +965,7 @@ h2 {
 }
 
 .dynamo-button:hover {
-  background: #388E3C;
+  background: #1976d2;
 }
 
 .dynamo-button i {
