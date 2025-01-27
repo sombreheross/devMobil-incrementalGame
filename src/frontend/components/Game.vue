@@ -122,6 +122,7 @@ import { useFetchApiCrud } from '../composables/useFetchApiCrud';
 import { useFetchApi } from '../composables/useFetchApi';
 import { useRouter } from 'vue-router';
 import StoryPopUp from './StoryPopUp.vue';
+import WSClient from '../../websocket/WSClient';
 
 const currentTab = ref('production');
 const energy = ref(0);
@@ -178,6 +179,9 @@ const motionEnabled = ref(false);
 const lastMovementTime = ref(0);
 
 const currentLevel = ref(0);
+
+const wsClient = ref(null);
+const isPrimaryClient = ref(false);
 
 const formatGeneratorName = (key) => {
   const names = {
@@ -311,6 +315,41 @@ const fetchEnergyAmount = () => {
   }, { immediate: true });
 };
 
+const initializeWebSocket = async () => {
+  try {
+    // Create WebSocket client with the appropriate URL
+    const hostname = window.location.hostname;
+    const mustBeSecure = window.location.protocol === 'https:';
+    const wsPort = mustBeSecure ? 443 : 8887;
+    const wsUrl = `${mustBeSecure ? 'wss' : 'ws'}://${hostname}:${wsPort}`;
+    
+    wsClient.value = new WSClient(wsUrl);
+    
+    // Connect with user token
+    const token = localStorage.getItem('token');
+    await wsClient.value.connect(token);
+    
+    // Subscribe to energy updates
+    await wsClient.value.sub('energy-update', (msg) => {
+      if (msg && typeof msg.energy === 'number') {
+        energy.value = msg.energy;
+      }
+    });
+    
+    // Check if we are the primary client
+    const { response: isPrimary } = await wsClient.value.rpc('isPrimaryClient', {});
+    isPrimaryClient.value = isPrimary;
+    
+    // Listen for primary client status changes
+    wsClient.value.on('ws:primary-client', (msg) => {
+      isPrimaryClient.value = msg.status;
+    });
+    
+  } catch (error) {
+    console.error('WebSocket connection error:', error);
+  }
+};
+
 let isSelling = false;  // Flag pour indiquer une vente en cours
 
 const handleSale = async () => {
@@ -364,8 +403,8 @@ let productionInterval;
 let syncInterval;
 
 const syncWithServer = async () => {
-  // Ne pas synchroniser pendant une vente
-  if (isSelling) return;
+  // Only sync if we are the primary client
+  if (!isPrimaryClient.value || isSelling) return;
 
   const { data, error, loading } = updateResources(`${energyResourceId}/resource`, {
     amount: energy.value
@@ -375,6 +414,10 @@ const syncWithServer = async () => {
     if (!newLoading) {
       if (data.value) {
         energy.value = data.value.amount;
+        // Publish energy update to other clients
+        if (wsClient.value) {
+          wsClient.value.pub('energy-update', { energy: energy.value }).catch(console.error);
+        }
       } else if (error.value) {
         console.error('Erreur lors de la synchronisation:', error.value);
         fetchEnergyAmount();
@@ -719,6 +762,7 @@ onMounted(() => {
   fetchGenerators();
   fetchAvailableUpgrades();
   startProduction();
+  initializeWebSocket();
 });
 
 onBeforeUnmount(() => {
@@ -731,6 +775,11 @@ onBeforeUnmount(() => {
   }
   if (dynamoInterval) {
     clearInterval(dynamoInterval);
+  }
+  
+  if (wsClient.value) {
+    wsClient.value.close();
+    wsClient.value = null;
   }
 });
 </script>
