@@ -27,7 +27,7 @@
       <h2>Stockage</h2>
       <div class="storage-info">
         <p>Stock d'énergie : {{ energy }} u</p>
-        <p>Rendement : {{ energyYield }} u/s</p>
+        <p>Rendement : {{ displayYield }}</p>
         <p>Coffre-fort : {{ money }}$</p>
         <p class="location">
           Localisation : {{ location === 'indoor' ? 'Intérieur' : 'Extérieur' }}
@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, onBeforeUnmount } from 'vue';
+import { ref, reactive, onMounted, watch, onBeforeUnmount, computed } from 'vue';
 import { useFetchApiCrud } from '../composables/useFetchApiCrud';
 import { useFetchApi } from '../composables/useFetchApi';
 import { useRouter } from 'vue-router';
@@ -337,10 +337,23 @@ const syncWithServer = async () => {
   });
 };
 
+const displayYield = computed(() => {
+  const baseYield = energyYield.value;
+  const actualYield = location.value === 'outdoor' ? baseYield * 1.1 : baseYield;
+  
+  if (location.value === 'outdoor') {
+    return `${actualYield.toFixed(1)} u/s (extérieur +10%)`;
+  }
+  return `${baseYield} u/s`;
+});
+
 const startProduction = () => {
   // Production locale chaque seconde
   productionInterval = setInterval(() => {
-    energy.value += energyYield.value;
+    const productionAmount = location.value === 'outdoor' 
+      ? energyYield.value * 1.1 
+      : energyYield.value;
+    energy.value += productionAmount;
   }, 1000);
 
   // Synchronisation avec le serveur toutes les 10 secondes
