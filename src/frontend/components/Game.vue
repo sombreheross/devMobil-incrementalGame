@@ -413,21 +413,22 @@ const startDynamo = async (duration) => {
       data: { dynamo: true }
     });
     
-    dynamoTimeLeft.value = Math.floor(duration);
-    console.log('dynamoTimeLeft initialisé à:', dynamoTimeLeft.value);
+    // Ajouter la nouvelle durée au temps restant
+    const newDuration = Math.floor(duration);
+    dynamoTimeLeft.value = (dynamoTimeLeft.value || 0) + newDuration;
+    console.log('dynamoTimeLeft mis à jour à:', dynamoTimeLeft.value);
     
-    if (dynamoInterval) {
-      clearInterval(dynamoInterval);
+    // Ne créer l'intervalle que s'il n'existe pas déjà
+    if (!dynamoInterval) {
+      dynamoInterval = setInterval(() => {
+        console.log('Temps restant:', dynamoTimeLeft.value);
+        dynamoTimeLeft.value--;
+        if (dynamoTimeLeft.value <= 0) {
+          console.log('Dynamo terminée');
+          stopDynamo();
+        }
+      }, 1000);
     }
-    
-    dynamoInterval = setInterval(() => {
-      console.log('Temps restant:', dynamoTimeLeft.value);
-      dynamoTimeLeft.value--;
-      if (dynamoTimeLeft.value <= 0) {
-        console.log('Dynamo terminée');
-        stopDynamo();
-      }
-    }, 1000);
   } catch (error) {
     console.error('Erreur lors du démarrage de la dynamo:', error);
   }
