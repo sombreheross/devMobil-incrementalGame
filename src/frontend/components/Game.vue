@@ -161,7 +161,7 @@ const shopGenerators = reactive({
   turbines: 6349
 });
 
-const shakeThreshold = 5;
+const shakeThreshold = 15;
 const shakeStartTime = ref(null);
 const dynamoTimeLeft = ref(0);
 let dynamoInterval = null;
@@ -374,14 +374,20 @@ const handleShake = (event) => {
     if (!shakeStartTime.value) {
       shakeStartTime.value = now;
       console.log('Début du secouage:', {
-        startTime: new Date(shakeStartTime.value).toISOString()
+        startTime: new Date(shakeStartTime.value).toISOString(),
+        movement: movement.toFixed(2)
       });
     }
+    lastMovementTime.value = now;
   } else if (shakeStartTime.value) {
-    if (now - shakeStartTime.value >= 1000 && now - lastMovementTime.value >= 500) {
+    if (movement < shakeThreshold * 0.5 &&
+        now - shakeStartTime.value >= 1000 &&
+        now - lastMovementTime.value >= 500) {
+      
       const shakeDuration = (now - shakeStartTime.value) / 1000;
       console.log('Fin du secouage:', {
         duration: shakeDuration,
+        finalMovement: movement.toFixed(2),
         dynamoDuration: shakeDuration * 3
       });
       
@@ -390,10 +396,6 @@ const handleShake = (event) => {
       }
       shakeStartTime.value = null;
     }
-  }
-  
-  if (movement > shakeThreshold) {
-    lastMovementTime.value = now;
   }
 };
 
