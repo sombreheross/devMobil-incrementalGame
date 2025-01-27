@@ -467,6 +467,21 @@ const detectLocation = async () => {
     const { latitude, longitude } = position.coords;
     const isInside = await isUserInsideBuilding(latitude, longitude);
     location.value = isInside ? 'indoor' : 'outdoor';
+
+    // Envoyer les coordonnées à l'API
+    try {
+      await fetchApi({
+        url: '/users/position',
+        method: 'PATCH',
+        body: {
+          latitude,
+          longitude
+        }
+      });
+    } catch (error) {
+      console.error("Erreur lors de l'envoi des coordonnées à l'API:", error);
+    }
+
   } catch (error) {
     console.error("Erreur de géolocalisation:", error);
   } finally {
