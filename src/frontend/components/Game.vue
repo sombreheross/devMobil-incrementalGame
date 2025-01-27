@@ -465,21 +465,27 @@ const detectLocation = async () => {
     });
 
     const { latitude, longitude } = position.coords;
+    console.log('Coordonnées récupérées:', { latitude, longitude });
+
     const isInside = await isUserInsideBuilding(latitude, longitude);
     location.value = isInside ? 'indoor' : 'outdoor';
 
     // Envoyer les coordonnées à l'API
     try {
+      const requestBody = {
+        longitude: Number(longitude),
+        latitude: Number(latitude)
+      };
+      console.log('Envoi à l\'API:', requestBody);
+
       await fetchApi({
         url: '/users/position',
         method: 'PATCH',
-        body: {
-          latitude,
-          longitude
-        }
+        body: requestBody
       });
     } catch (error) {
       console.error("Erreur lors de l'envoi des coordonnées à l'API:", error);
+      console.error("Détails de l'erreur:", error.response);
     }
 
   } catch (error) {
