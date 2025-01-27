@@ -357,27 +357,14 @@ const syncWithServer = async () => {
 
 const handleShake = (event) => {
   const acceleration = event.accelerationIncludingGravity;
-  console.log('DeviceMotion Event:', {
-    acceleration,
-    timestamp: new Date().toISOString()
-  });
 
-  if (!acceleration) {
-    console.log('Pas de données d\'accélération disponibles');
-    return;
-  }
+  if (!acceleration) return;
 
   const movement = Math.sqrt(
     Math.pow(acceleration.x, 2) +
     Math.pow(acceleration.y, 2) +
     Math.pow(acceleration.z, 2)
   );
-
-  console.log('Mouvement détecté:', {
-    movement,
-    threshold: shakeThreshold,
-    isShaking: movement > shakeThreshold
-  });
 
   if (movement > shakeThreshold) {
     if (!shakeStartTime.value) {
@@ -449,7 +436,6 @@ const stopDynamo = async () => {
 };
 
 const formatDynamoTime = computed(() => {
-  console.log('Formatage du temps dynamo:', dynamoTimeLeft.value);
   const minutes = Math.floor(dynamoTimeLeft.value / 60);
   const seconds = dynamoTimeLeft.value % 60;
   return `${minutes}m ${seconds}s`;
