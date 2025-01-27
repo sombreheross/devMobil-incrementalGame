@@ -3,19 +3,24 @@
     <button class="logout-button" @click="handleLogout">
       <i class="fas fa-sign-out-alt"></i>
     </button>
-    <div class="tabs">
-      <button 
-        :class="{ active: currentTab === 'production' }" 
-        @click="currentTab = 'production'"
-      >
-        Production
-      </button>
-      <button 
-        :class="{ active: currentTab === 'shop' }" 
-        @click="currentTab = 'shop'"
-      >
-        Boutique
-      </button>
+    <div class="tab-slider">
+      <div class="tab-slider-wrapper">
+        <button 
+          :class="{ active: currentTab === 'production' }" 
+          @click="currentTab = 'production'"
+        >
+          <i class="fas fa-bolt"></i>
+          Production
+        </button>
+        <button 
+          :class="{ active: currentTab === 'shop' }" 
+          @click="currentTab = 'shop'"
+        >
+          <i class="fas fa-money-bill"></i>
+          Boutique
+        </button>
+        <div class="slider-background" :class="currentTab"></div>
+      </div>
     </div>
 
     <section class="storage">
@@ -24,6 +29,18 @@
         <p>Stock d'énergie : {{ energy }} u</p>
         <p>Rendement : {{ energyYield }} u/s</p>
         <p>Coffre-fort : {{ money }}$</p>
+        <p class="location">
+          Localisation : {{ location === 'indoor' ? 'Intérieur' : 'Extérieur' }}
+          <button 
+            class="location-toggle" 
+            @click="detectLocation"
+            :disabled="isLocating"
+          >
+            <i class="fas" :class="[
+              isLocating ? 'fa-spinner fa-spin' : location === 'indoor' ? 'fa-door-open' : 'fa-door-closed'
+            ]"></i>
+          </button>
+        </p>
       </div>
     </section>
 
@@ -97,6 +114,8 @@ const energyYield = ref(0);
 const money = ref(0);
 const goldResourceId = '1';
 const energyResourceId = '2';
+const location = ref('indoor');
+const isLocating = ref(false);
 
 const generators = reactive({
   smallWindmill: [],      // Petite batterie
@@ -401,6 +420,60 @@ const handleLogout = async () => {
   router.push('/login');
 };
 
+const isUserInsideBuilding = async (lat, lon) => {
+  const overpassUrl = "https://overpass-api.de/api/interpreter";
+  const query = `
+    [out:json];
+    (
+      is_in(${lat},${lon});
+    );
+    way._[building];
+    out;
+  `;
+
+  try {
+    const response = await fetch(overpassUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: query,
+    });
+
+    if (!response.ok) {
+      console.error("Erreur API Overpass:", response.statusText);
+      return false;
+    }
+
+    const data = await response.json();
+    return data.elements && data.elements.length > 0;
+  } catch (error) {
+    console.error("Erreur de connexion ou de traitement :", error);
+    return false;
+  }
+};
+
+const detectLocation = async () => {
+  if (!navigator.geolocation) {
+    console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+    return;
+  }
+
+  isLocating.value = true;
+  
+  try {
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+
+    const { latitude, longitude } = position.coords;
+    const isInside = await isUserInsideBuilding(latitude, longitude);
+    location.value = isInside ? 'indoor' : 'outdoor';
+  } catch (error) {
+    console.error("Erreur de géolocalisation:", error);
+  } finally {
+    isLocating.value = false;
+  }
+};
+
 onMounted(() => {
   fetchGoldAmount();
   fetchEnergyAmount();
@@ -423,24 +496,58 @@ onBeforeUnmount(() => {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.tabs {
+.tab-slider {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.tab-slider-wrapper {
+  position: relative;
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  background: rgba(238, 238, 238, 0.9);
+  padding: 5px;
+  border-radius: 30px;
+  gap: 5px;
 }
 
-.tabs button {
-  padding: 10px 20px;
+.tab-slider-wrapper button {
+  position: relative;
+  z-index: 2;
+  padding: 10px 25px;
   border: none;
-  background: #eee;
+  background: none;
   cursor: pointer;
-  font-size: 1.1rem;
-  border-radius: 5px;
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s;
 }
 
-.tabs button.active {
-  background: #2196f3;
+.tab-slider-wrapper button.active {
   color: white;
+}
+
+.slider-background {
+  position: absolute;
+  top: 5px;
+  height: calc(100% - 10px);
+  width: calc(50% - 5px);
+  background: #2196f3;
+  border-radius: 25px;
+  transition: transform 0.3s ease;
+}
+
+.slider-background.shop {
+  transform: translateX(calc(100% + 5px));
+}
+
+.tab-slider-wrapper button i {
+  font-size: 1.1rem;
 }
 
 section {
@@ -580,5 +687,29 @@ h2 {
 
 .logout-button:hover {
   background: #d32f2f;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #2196f3;
+  transition: color 0.2s;
+}
+
+.location-toggle:hover {
+  color: #1976d2;
+}
+
+.location-toggle:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 </style>
