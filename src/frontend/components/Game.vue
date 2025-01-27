@@ -64,16 +64,8 @@
             <span class="generator-count">{{ upgradeList.length }}</span>
           </div>
         </div>
-        <div v-else class="repair-section">
-          <p class="repair-text">La centrale est en mauvais état. Il faut commencer par réparer la petite batterie pour produire de l'énergie.</p>
-          <button 
-            class="repair-button" 
-            @click="handleRepair"
-            :disabled="money < 5"
-          >
-            <i class="fas fa-wrench"></i>
-            Réparer la batterie (5$)
-          </button>
+        <div v-else>
+          <p>Aucune installation de production d'énergie.</p>
         </div>
       </section>
     </div>
@@ -721,42 +713,6 @@ const activeGenerators = computed(() => {
     }, {});
 });
 
-const handleRepair = async () => {
-  if (money.value < 5) return;
-  
-  try {
-    // Mettre à jour l'argent
-    const { data: moneyData, error: moneyError, loading: moneyLoading } = updateResources(`${goldResourceId}/resource`, {
-      amount: money.value - 5
-    });
-
-    watch(moneyLoading, async (newMoneyLoading) => {
-      if (!newMoneyLoading) {
-        if (moneyData.value) {
-          money.value = moneyData.value.amount;
-
-          try {
-            // Acheter la première batterie
-            await fetchApi({
-              url: '/upgrades/1/buy',
-              method: 'POST'
-            });
-            
-            // Mettre à jour la liste des générateurs
-            await fetchGenerators();
-          } catch (buyError) {
-            console.error('Erreur lors de la réparation de la batterie:', buyError);
-          }
-        } else if (moneyError.value) {
-          console.error('Erreur lors de la mise à jour de l\'argent:', moneyError.value);
-        }
-      }
-    });
-  } catch (err) {
-    console.error('Erreur lors de la réparation:', err);
-  }
-};
-
 onMounted(() => {
   fetchGoldAmount();
   fetchEnergyAmount();
@@ -1039,47 +995,5 @@ h2 {
 
 .dynamo-button i {
   font-size: 1.1rem;
-}
-
-.repair-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 30px;
-  text-align: center;
-}
-
-.repair-text {
-  color: #666;
-  line-height: 1.5;
-  font-size: 1.1rem;
-}
-
-.repair-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 24px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.repair-button:hover:not(:disabled) {
-  background: #45a049;
-}
-
-.repair-button:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-}
-
-.repair-button i {
-  font-size: 1.2rem;
 }
 </style>
