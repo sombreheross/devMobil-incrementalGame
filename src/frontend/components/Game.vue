@@ -750,7 +750,7 @@ onBeforeUnmount(() => {
   top: 5px;
   height: calc(100% - 10px);
   width: calc(50% - 5px);
-  background: #2196f3;
+  background: #4CAF50;
   border-radius: 25px;
   transition: transform 0.3s ease;
 }
@@ -827,7 +827,7 @@ h2 {
 
 .sell-button {
   padding: 8px 20px;
-  background: #2196f3;
+  background: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -836,7 +836,7 @@ h2 {
 }
 
 .sell-button:hover {
-  background: #1976d2;
+  background: #388E3C;
 }
 
 .generator-shop-list {
@@ -913,7 +913,7 @@ h2 {
   border: none;
   cursor: pointer;
   padding: 5px 10px;
-  color: #2196f3;
+  color: #4CAF50;
   transition: color 0.2s;
   display: flex;
   align-items: center;
@@ -925,7 +925,7 @@ h2 {
 }
 
 .location-toggle:hover {
-  color: #1976d2;
+  color: #388E3C;
 }
 
 .location-toggle:disabled {
@@ -934,7 +934,7 @@ h2 {
 }
 
 .dynamo {
-  color: #2196f3;
+  color: #4CAF50;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -946,7 +946,7 @@ h2 {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: #2196f3;
+  background: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -956,7 +956,7 @@ h2 {
 }
 
 .dynamo-button:hover {
-  background: #1976d2;
+  background: #388E3C;
 }
 
 .dynamo-button i {
