@@ -484,7 +484,7 @@ const detectLocation = async () => {
       const response = await fetchApi({
         url: '/users/position',
         method: 'PATCH',
-        body: payload
+        data: payload
       });
       
       console.log('Réponse de l\'API:', response);
