@@ -481,11 +481,18 @@ const detectLocation = async () => {
       await fetchApi({
         url: '/users/position',
         method: 'PATCH',
-        body: requestBody
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: requestBody  // Changé de 'body' à 'data'
       });
+      
+      console.log('Position mise à jour avec succès');
     } catch (error) {
       console.error("Erreur lors de l'envoi des coordonnées à l'API:", error);
-      console.error("Détails de l'erreur:", error.response);
+      if (error.response) {
+        console.error("Réponse de l'API:", error.response.data);
+      }
     }
 
   } catch (error) {
