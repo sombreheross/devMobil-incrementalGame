@@ -39,6 +39,7 @@
             <i class="fas" :class="[
               isLocating ? 'fa-spinner fa-spin' : location === 'indoor' ? 'fa-door-open' : 'fa-door-closed'
             ]"></i>
+            <span>Me localiser</span>
           </button>
         </p>
       </div>
@@ -741,9 +742,16 @@ h2 {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 5px 10px;
   color: #2196f3;
   transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.location-toggle span {
+  font-size: 0.9rem;
 }
 
 .location-toggle:hover {
